@@ -51,8 +51,7 @@
 	"pi": {
 		"extensions": [
 			"./extensions/annotate.ts"
-		],
-		"video": "https://raw.githubusercontent.com/magimetal/pi-annotate/main/demo.mp4"
+		]
 	},
 	"peerDependencies": {
 		"@mariozechner/pi-coding-agent": "*",
