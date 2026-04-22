@@ -1,0 +1,68 @@
+{
+	"name": "pi-annotate",
+	"version": "0.4.3",
+	"description": "Visual annotation tool for Pi coding agent with inline note cards",
+	"type": "module",
+	"author": "Magi Metal",
+	"contributors": [
+		"Nico Bailon (original developer)"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/magimetal/pi-annotate.git"
+	},
+	"bugs": {
+		"url": "https://github.com/magimetal/pi-annotate/issues"
+	},
+	"homepage": "https://github.com/magimetal/pi-annotate",
+	"keywords": [
+		"pi-package",
+		"pi",
+		"pi-coding-agent",
+		"pi-extension",
+		"annotation",
+		"visual-debugging",
+		"chrome-extension",
+		"extension"
+	],
+	"engines": {
+		"node": ">=20.0.0"
+	},
+	"files": [
+		"extensions",
+		"chrome-extension",
+		"!chrome-extension/native/host-wrapper.sh",
+		"README.md",
+		"CHANGELOG.md",
+		"LICENSE",
+		"NOTICE.md"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "vitest --run",
+		"typecheck": "tsc --noEmit",
+		"verify:pack": "node scripts/verify-pack.mjs",
+		"verify:install": "node scripts/verify-install.mjs",
+		"check": "npm run typecheck && npm test && npm run verify:pack && npm run verify:install"
+	},
+	"pi": {
+		"extensions": [
+			"./extensions/annotate.ts"
+		],
+		"video": "https://raw.githubusercontent.com/magimetal/pi-annotate/main/demo.mp4"
+	},
+	"peerDependencies": {
+		"@mariozechner/pi-coding-agent": "*",
+		"@sinclair/typebox": "*"
+	},
+	"devDependencies": {
+		"@mariozechner/pi-coding-agent": "0.68.1",
+		"@sinclair/typebox": "0.34.49",
+		"@types/node": "25.6.0",
+		"typescript": "6.0.3",
+		"vitest": "4.1.5"
+	}
+}

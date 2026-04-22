@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+*.log
+*.tgz
+.pi/
+.pi-lens/
+test-results/
+chrome-extension/native/host-wrapper.sh

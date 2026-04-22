@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Annotator Panel Collapse Fixture</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+
+    .monitor {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      width: min(460px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.92);
+      color: #e5eef7;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22);
+      backdrop-filter: blur(8px);
+    }
+
+    .monitor h1 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .pi-fixture-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 10px;
+    }
+
+    .pi-fixture-control {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #dbeafe;
+      color: #0f172a;
+      font: 700 12px/1.2 Inter, system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    .pi-fixture-control:hover {
+      background: #bfdbfe;
+    }
+
+    .monitor-grid {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 2fr;
+      gap: 6px 10px;
+      font: 12px/1.4 ui-monospace, SFMono-Regular, monospace;
+    }
+
+    .monitor-grid dt {
+      color: #93c5fd;
+    }
+
+    .monitor-grid dd {
+      margin: 0;
+      word-break: break-word;
+      color: #f8fafc;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 200px 24px 24px;
+    }
+
+    .hero,
+    .card,
+    .bottom-sentinel,
+    .picker-lab {
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .picker-parent {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+      border: 2px dashed #60a5fa;
+      border-radius: 18px;
+      background: #eff6ff;
+    }
+
+    .picker-parent-label {
+      font: 700 13px/1.2 ui-monospace, SFMono-Regular, monospace;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .probe-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: fit-content;
+      min-height: 52px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #0f766e);
+      color: white;
+      font: 800 14px/1 Inter, system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24);
+    }
+
+    .probe-status {
+      font: 13px/1.5 ui-monospace, SFMono-Regular, monospace;
+      color: #0f172a;
+    }
+
+    .spacer {
+      height: 1100px;
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.02));
+      border-radius: 24px;
+      margin: 24px 0;
+    }
+
+    .bottom-proof {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      color: #155e75;
+      font: 700 12px/1.2 ui-monospace, SFMono-Regular, monospace;
+    }
+  </style>
+</head>
+<body>
+  <aside class="monitor pi-fixture-monitor">
+    <h1>Runtime monitor</h1>
+    <div class="pi-fixture-controls">
+      <button class="pi-fixture-control" id="start-annotator" type="button">Start annotator</button>
+      <button class="pi-fixture-control" id="probe-hover" type="button">Probe collapsed hover</button>
+      <button class="pi-fixture-control" id="probe-wheel" type="button">Probe Alt+wheel</button>
+      <button class="pi-fixture-control" id="probe-click" type="button">Probe collapsed click</button>
+      <button class="pi-fixture-control" id="scroll-bottom" type="button">Scroll bottom sentinel</button>
+      <button class="pi-fixture-control" id="send-esc" type="button">Send ESC</button>
+    </div>
+    <dl class="monitor-grid">
+      <dt>body.paddingBottom</dt><dd id="body-padding-bottom"></dd>
+      <dt>body.scrollPaddingBottom</dt><dd id="body-scroll-padding-bottom"></dd>
+      <dt>root.scrollPaddingBottom</dt><dd id="root-scroll-padding-bottom"></dd>
+      <dt>panel.present</dt><dd id="panel-present"></dd>
+      <dt>panel.collapsed</dt><dd id="panel-collapsed"></dd>
+      <dt>restore.visible</dt><dd id="restore-visible"></dd>
+      <dt>panel.count</dt><dd id="panel-count"></dd>
+      <dt>selected.primary</dt><dd id="selected-primary"></dd>
+      <dt>panel.context</dt><dd id="panel-context"></dd>
+      <dt>panel.debug</dt><dd id="panel-debug"></dd>
+      <dt>panel.etch</dt><dd id="panel-etch"></dd>
+      <dt>markers.count</dt><dd id="markers-count"></dd>
+      <dt>notes.open</dt><dd id="notes-open"></dd>
+      <dt>first.note</dt><dd id="first-note"></dd>
+      <dt>highlight.visible</dt><dd id="highlight-visible"></dd>
+      <dt>tooltip.text</dt><dd id="tooltip-text"></dd>
+      <dt>probe.clicks</dt><dd id="probe-clicks">0</dd>
+      <dt>last.synthetic</dt><dd id="last-synthetic"></dd>
+      <dt>last.defaultPrevented</dt><dd id="last-default-prevented"></dd>
+      <dt>bottom.proofAbovePanel</dt><dd id="bottom-proof-visible"></dd>
+      <dt>bottom.proofGapPx</dt><dd id="bottom-proof-gap"></dd>
+    </dl>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <p>Fixture for collapsed picker runtime verification and expanded bottom-reachability checks.</p>
+      <p>Harness controls use <code>pi-</code>-prefixed classes so content-script picker ignores them while active.</p>
+    </section>
+
+    <section class="picker-lab" id="picker-lab">
+      <h2>Collapsed picker lab</h2>
+      <p>Use real panel collapse button, then use fixture probes to drive hover, Alt/Option+wheel parent cycling, and click-select against live content-script listeners.</p>
+      <div class="picker-parent" id="probe-parent">
+        <div class="picker-parent-label">Probe parent #probe-parent</div>
+        <button id="probe-child" class="probe-cta" type="button">Probe CTA #probe-child</button>
+        <p class="probe-status" id="probe-status">Page CTA idle. Picker click should keep this unchanged while selection count increases.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Expanded-mode bottom reachability anchor</h3>
+      <p>Expanded panel should reserve body and scroll bottom space so bottom proof remains readable above panel.</p>
+    </section>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <section class="bottom-sentinel" id="normal-flow-bottom">
+      <h3>Bottom-of-page normal-flow sentinel</h3>
+      <p>This block sits near document bottom. Scroll here while panel expanded.</p>
+      <p id="bottom-status">Bottom sentinel ready.</p>
+      <div class="bottom-proof" id="bottom-proof">Bottom proof chip must sit above expanded panel.</div>
+    </section>
+  </main>
+
+  <script>
+    window.chrome = {
+      runtime: {
+        id: 'pi-annotate-fixture',
+        onMessage: {
+          addListener(listener) {
+            window.__piListener = listener;
+          }
+        },
+        async sendMessage(message) {
+          window.__piMessages = window.__piMessages || [];
+          window.__piMessages.push(message);
+          return {};
+        }
+      }
+    };
+
+    function dispatchPiMessage(message) {
+      window.__piListener?.(message, null, () => {});
+    }
+
+    function readText(value, fallback = '[empty]') {
+      return value && String(value).trim() ? String(value).trim() : fallback;
+    }
+
+    function getProbeTarget() {
+      return document.getElementById('probe-child');
+    }
+
+    function getProbeCenter(target) {
+      const rect = target.getBoundingClientRect();
+      return {
+        clientX: Math.round(rect.left + rect.width / 2),
+        clientY: Math.round(rect.top + rect.height / 2),
+      };
+    }
+
+    function recordSynthetic(action, event) {
+      window.__lastProbeResult = {
+        action,
+        defaultPrevented: Boolean(event?.defaultPrevented),
+      };
+      updateMonitor();
+    }
+
+    function dispatchProbeMouseMove() {
+      const target = getProbeTarget();
+      const point = getProbeCenter(target);
+      const event = new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: point.clientX,
+        clientY: point.clientY,
+      });
+      target.dispatchEvent(event);
+      recordSynthetic('mousemove:#probe-child', event);
+    }
+
+    function dispatchProbeWheel() {
+      dispatchProbeMouseMove();
+      const target = getProbeTarget();
+      const point = getProbeCenter(target);
+      const event = new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: point.clientX,
+        clientY: point.clientY,
+        altKey: true,
+        deltaY: 120,
+      });
+      target.dispatchEvent(event);
+      recordSynthetic('wheel+alt:#probe-child', event);
+    }
+
+    function dispatchProbeClick() {
+      dispatchProbeMouseMove();
+      const target = getProbeTarget();
+      const point = getProbeCenter(target);
+      const event = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: point.clientX,
+        clientY: point.clientY,
+      });
+      target.dispatchEvent(event);
+      recordSynthetic('click:#probe-child', event);
+    }
+
+    document.getElementById('probe-child').addEventListener('click', () => {
+      const probeClicks = document.getElementById('probe-clicks');
+      const next = Number(probeClicks.textContent || '0') + 1;
+      probeClicks.textContent = String(next);
+      document.getElementById('probe-status').textContent = `Page CTA clicked ${next} time(s).`; 
+    });
+
+    document.getElementById('start-annotator').addEventListener('click', () => {
+      dispatchPiMessage({ type: 'TOGGLE_PICKER' });
+      updateMonitor();
+    });
+
+    document.getElementById('probe-hover').addEventListener('click', () => {
+      dispatchProbeMouseMove();
+    });
+
+    document.getElementById('probe-wheel').addEventListener('click', () => {
+      dispatchProbeWheel();
+    });
+
+    document.getElementById('probe-click').addEventListener('click', () => {
+      dispatchProbeClick();
+    });
+
+    document.getElementById('scroll-bottom').addEventListener('click', () => {
+      document.getElementById('bottom-proof').scrollIntoView({ block: 'end', behavior: 'instant' });
+      window.__lastProbeResult = {
+        action: 'scroll:#bottom-proof',
+        defaultPrevented: false,
+      };
+      updateMonitor();
+    });
+
+    document.getElementById('send-esc').addEventListener('click', () => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      updateMonitor();
+    });
+
+    function updateMonitor() {
+      const panel = document.getElementById('pi-panel');
+      const restoreButton = document.getElementById('pi-restore-panel');
+      const firstNote = document.querySelector('.pi-note-card textarea');
+      const firstSelector = document.querySelector('.pi-note-card .pi-note-selector');
+      const notes = Array.from(document.querySelectorAll('.pi-note-card')).filter((card) => !card.hidden);
+      const markers = document.querySelectorAll('.pi-marker-badge');
+      const contextInput = document.getElementById('pi-context');
+      const debugCheckbox = document.getElementById('pi-debug-mode');
+      const etchCheckbox = document.getElementById('pi-etch-mode');
+      const countEl = document.getElementById('pi-count');
+      const highlight = document.getElementById('pi-highlight');
+      const tooltip = document.getElementById('pi-tooltip');
+      const bottomProof = document.getElementById('bottom-proof');
+      const panelTop = panel && !panel.classList.contains('pi-panel-collapsed')
+        ? Math.round(panel.getBoundingClientRect().top)
+        : window.innerHeight;
+      const proofRect = bottomProof.getBoundingClientRect();
+      const proofGap = Math.round(panelTop - proofRect.bottom);
+      const proofAbovePanel = proofRect.bottom <= panelTop && proofRect.top >= 0;
+      const lastProbeResult = window.__lastProbeResult || {};
+
+      document.getElementById('body-padding-bottom').textContent = readText(document.body.style.paddingBottom);
+      document.getElementById('body-scroll-padding-bottom').textContent = readText(document.body.style.scrollPaddingBottom);
+      document.getElementById('root-scroll-padding-bottom').textContent = readText(document.documentElement.style.scrollPaddingBottom);
+      document.getElementById('panel-present').textContent = String(Boolean(panel));
+      document.getElementById('panel-collapsed').textContent = String(Boolean(panel?.classList.contains('pi-panel-collapsed')));
+      document.getElementById('restore-visible').textContent = String(Boolean(restoreButton && !restoreButton.hidden));
+      document.getElementById('panel-count').textContent = readText(countEl?.textContent);
+      document.getElementById('selected-primary').textContent = readText(firstSelector?.textContent);
+      document.getElementById('panel-context').textContent = readText(contextInput?.value);
+      document.getElementById('panel-debug').textContent = String(Boolean(debugCheckbox?.checked));
+      document.getElementById('panel-etch').textContent = String(Boolean(etchCheckbox?.checked));
+      document.getElementById('markers-count').textContent = String(markers.length);
+      document.getElementById('notes-open').textContent = String(notes.length);
+      document.getElementById('first-note').textContent = readText(firstNote?.value);
+      document.getElementById('highlight-visible').textContent = String(Boolean(highlight && highlight.style.display !== 'none'));
+      document.getElementById('tooltip-text').textContent = readText(tooltip?.textContent?.replace(/\s+/g, ' ').trim());
+      document.getElementById('last-synthetic').textContent = readText(lastProbeResult.action);
+      document.getElementById('last-default-prevented').textContent = String(Boolean(lastProbeResult.defaultPrevented));
+      document.getElementById('bottom-proof-visible').textContent = String(proofAbovePanel);
+      document.getElementById('bottom-proof-gap').textContent = `${proofGap}px`;
+    }
+
+    updateMonitor();
+    setInterval(updateMonitor, 150);
+  </script>
+  <script src="/chrome-extension/content.js"></script>
+</body>
+</html>
