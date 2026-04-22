@@ -1,28 +1,13 @@
-<p>
-  <img src="https://raw.githubusercontent.com/magimetal/pi-annotate/main/banner.png" alt="Pi Annotate" width="1100">
-</p>
-
+![Pi Annotate](docs/pi-annotate.png)
 # pi-annotate
 
-Pi package. Ships `/annotate` command plus `annotate` tool for browser-side visual annotation, screenshots, inline note capture, and edit-capture handoff.
+Pi package. Adds `/annotate` command and `annotate` tool for browser-side visual annotation: element picking, inline notes, screenshots, and edit-capture handoff into Pi.
 
-Repo root = package root. Important because `pi install` from git clones repo and reads root `package.json`.
-
-Maintained repository: [`magimetal/pi-annotate`](https://github.com/magimetal/pi-annotate)
-
-Upstream source and original developer: [`nicobailon/pi-annotate`](https://github.com/nicobailon/pi-annotate) by Nico Bailon.
-
-Durable provenance stays in [`NOTICE.md`](NOTICE.md), [`LICENSE`](LICENSE), and package metadata.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Browser](https://img.shields.io/badge/Browser-Chrome%20%7C%20Chromium-blue?style=for-the-badge)]()
-
-Demo:
-https://github.com/user-attachments/assets/115b10ca-86e8-4b1c-b8a4-492c68759c58
+Repo root = package root. Important because Pi installs GitHub packages by cloning repo and reading root `package.json`.
 
 ## Install
 
-### From GitHub
+From GitHub:
 
 ```bash
 pi install git:github.com/magimetal/pi-annotate
@@ -30,13 +15,13 @@ pi install git:github.com/magimetal/pi-annotate
 pi install https://github.com/magimetal/pi-annotate
 ```
 
-### Project-local install
+Project-local install:
 
 ```bash
 pi install -l git:github.com/magimetal/pi-annotate
 ```
 
-### From local checkout
+From local checkout:
 
 ```bash
 pi install /absolute/path/to/pi-annotate
@@ -44,46 +29,32 @@ pi install /absolute/path/to/pi-annotate
 pi install -l /absolute/path/to/pi-annotate
 ```
 
-`npm:pi-annotate` not advertised here. Maintained npm publish surface not confirmed.
-
 Reload or restart Pi after install.
 
-## Command
+## Prerequisites
+
+Requires a Chromium-based browser (Google Chrome, Google Chrome for Testing, or Chromium) plus the bundled unpacked extension and native messaging host. Setup steps live in [Operator setup](#operator-setup).
+
+## Use
+
+Command:
 
 ```text
 /annotate
-/annotate https://x.com
+/annotate https://example.com
 ```
 
-Command opens annotation mode on current browser tab. If current tab is restricted (`chrome://`, extension pages, similar), command can open provided URL in new tab first.
+Opens annotation mode on current browser tab. If current tab is restricted (`chrome://`, extension pages, similar), supplied URL opens in a new tab first.
 
-## Tool
+Tool:
 
 ```text
-annotate({ url?, timeout? })
+annotate({ url?: string, timeout?: number })
 ```
 
-Tool opens visual annotation mode so user can click elements, add comments, and return structured selectors, box model data, accessibility details, screenshots, and edit-capture output when enabled.
+Returns structured selectors, box model, accessibility data, screenshots, and edit-capture output when enabled.
 
-## Operator flow
-
-### 1. Load browser extension
-
-Open extensions page in Google Chrome, Google Chrome for Testing, or Chromium. Enable **Developer mode**. Click **Load unpacked** and choose `chrome-extension/` from installed package or local checkout. Then click **Pi Annotate** toolbar icon.
-
-### 2. Install native host
-
-Popup shows extension ID. Copy install command from popup, then run from `chrome-extension/native/` inside installed package or local checkout:
-
-```bash
-./install.sh <extension-id>
-```
-
-Installer writes native messaging manifest for Google Chrome, Google Chrome for Testing, and Chromium on macOS, plus default and current config-home locations for supported Linux browsers. Fully quit and reopen browser after install. Popup should show **Connected**.
-
-### 3. Annotate page
-
-Use command or tool, then interact in browser:
+In-browser controls:
 
 | Action | How |
 |--------|-----|
@@ -97,9 +68,25 @@ Use command or tool, then interact in browser:
 | Toggle note | Click numbered badge |
 | Expand/collapse all | ▼/▲ buttons in toolbar |
 | Toggle edit capture | "Etch" toggle in toolbar |
-| Collapse panel | `−` button in toolbar header; use top-right "Restore annotator" pill to resume picking |
+| Collapse panel | `−` in toolbar header; "Restore annotator" pill resumes picking |
 | Toggle annotation UI | `⌘/Ctrl+Shift+P` |
 | Close | `ESC` |
+
+## Operator setup
+
+### 1. Load browser extension
+
+Open the extensions page in Google Chrome, Google Chrome for Testing, or Chromium. Enable **Developer mode**. Click **Load unpacked** and choose `chrome-extension/` from the installed package or local checkout. Click the **Pi Annotate** toolbar icon.
+
+### 2. Install native host
+
+Popup shows the extension ID. Copy the install command from the popup, then run from `chrome-extension/native/` inside the installed package or local checkout:
+
+```bash
+./install.sh <extension-id>
+```
+
+Installer writes the native messaging manifest for Google Chrome, Google Chrome for Testing, and Chromium on macOS, plus default and current config-home locations on supported Linux browsers. Fully quit and reopen the browser after install. Popup should show **Connected**.
 
 ## What gets captured
 
@@ -107,7 +94,7 @@ Use command or tool, then interact in browser:
 - **Inline note cards**: draggable note UI with connectors, per-element comments, click-to-scroll, per-element screenshot toggles
 - **Screenshots**: element crops with padding or full-page capture with numbered badges
 - **Edit capture**: enable **Etch** to record inline-style changes, CSS rule edits, class changes, text edits, plus before/after screenshots
-- **Restricted tab handling**: if current tab is `chrome://` or other restricted URL, command/tool can open provided URL in new tab instead
+- **Restricted tab handling**: command/tool can open a supplied URL in a new tab when the current tab is `chrome://` or otherwise restricted
 
 Debug mode adds computed styles, parent context, and CSS variables per element.
 
@@ -174,38 +161,7 @@ Native Host (chrome-extension/native/host.cjs)
 Browser Extension (background.js → content.js)
 ```
 
-Key files:
-
-- `extensions/annotate.ts` — package entrypoint
-- `extensions/annotate-core.ts` — `/annotate` command and `annotate` tool runtime
-- `extensions/annotate-types.ts` — TypeScript interfaces
-- `chrome-extension/content.js` — element picker UI
-- `chrome-extension/background.js` — native messaging, screenshots, tab routing
-- `chrome-extension/native/host.cjs` — socket ↔ native messaging bridge
-- `chrome-extension/popup.html` — connection status and setup UI
-
 Auth token generated per run at `/tmp/pi-annotate.token`. Socket and token files use `0600` permissions.
-
-## Development
-
-```bash
-npm ci
-npm run typecheck
-npm test
-npm run check
-```
-
-`npm run check` covers typecheck, tests, packed-artifact verification, and install smoke verification.
-
-No build step. Edit `chrome-extension/content.js` or `chrome-extension/background.js` directly, then reload extension at `chrome://extensions`. Pi extension TypeScript loads via jiti, so restart Pi after runtime changes.
-
-Useful logs:
-
-```bash
-tail -f /tmp/pi-annotate-host.log                    # Native host logs
-# chrome://extensions → Pi Annotate → service worker  # Background logs
-# DevTools on target page                              # Content script logs
-```
 
 ## Troubleshooting
 
@@ -213,7 +169,7 @@ tail -f /tmp/pi-annotate-host.log                    # Native host logs
 |-------|-----|
 | UI does not appear | Refresh page, click extension icon, check service worker console |
 | `restricted URL` error | Provide URL: `/annotate https://example.com` |
-| Native host not connecting | Re-run install command from popup, fully restart supported browser |
+| Native host not connecting | Re-run install command from popup, fully restart browser |
 | Extension ID mismatch | Copy popup command again, then rerun `./install.sh <extension-id>` |
 | Socket errors | `ls -la /tmp/pi-annotate.sock` |
 
@@ -227,8 +183,58 @@ Native-host manifest paths to inspect:
 - Linux Chromium default: `~/.config/chromium/NativeMessagingHosts/com.pi.annotate.json`
 - Custom Linux config root: `${CHROME_CONFIG_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}}`
 
-If Linux browser uses different config root, export `CHROME_CONFIG_HOME` or `XDG_CONFIG_HOME` before running installer. Custom `--user-data-dir` layouts not handled by installer.
+If a Linux browser uses a different config root, export `CHROME_CONFIG_HOME` or `XDG_CONFIG_HOME` before running the installer. Custom `--user-data-dir` layouts are not handled by the installer.
 
-## License
+Useful logs:
 
-MIT. Original attribution remains in [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).
+```bash
+tail -f /tmp/pi-annotate-host.log                    # native host
+# chrome://extensions → Pi Annotate → service worker  # background
+# DevTools on target page                              # content script
+```
+
+## Repo layout
+
+```text
+.
+├── extensions/
+│   ├── annotate.ts
+│   ├── annotate-core.ts
+│   └── annotate-types.ts
+├── chrome-extension/
+│   ├── background.js
+│   ├── content.js
+│   ├── popup.html
+│   ├── popup.js
+│   ├── manifest.json
+│   ├── icons/
+│   └── native/
+│       ├── host.cjs
+│       └── install.sh
+├── docs/
+│   └── pi-annotate.png
+├── tests/
+├── package.json
+├── CHANGELOG.md
+├── NOTICE.md
+├── LICENSE
+└── README.md
+```
+
+## Develop
+
+Install deps:
+
+```bash
+npm install
+```
+
+Run quality gates:
+
+```bash
+npm run typecheck
+npm test
+npm run check
+```
+
+No build step. Edit `chrome-extension/content.js` or `chrome-extension/background.js` directly, then reload the extension at `chrome://extensions`. Pi extension TypeScript loads via jiti, so restart Pi after runtime changes.
