@@ -3,6 +3,8 @@
 
 Pi package. Adds `/annotate` command and `annotate` tool for browser-side visual annotation: element picking, inline notes, screenshots, and edit-capture handoff into Pi.
 
+_Forked from and inspired by [nicobailon/pi-annotate](https://github.com/nicobailon/pi-annotate)._
+
 Repo root = package root. Important because Pi installs GitHub packages by cloning repo and reading root `package.json`.
 
 ## Install
