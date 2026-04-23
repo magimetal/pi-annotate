@@ -35,7 +35,7 @@ Reload or restart Pi after install.
 
 ## Prerequisites
 
-Requires a Chromium-based browser (Google Chrome, Google Chrome for Testing, or Chromium) plus the bundled unpacked extension and native messaging host. Setup steps live in [Operator setup](#operator-setup).
+Requires a Chromium-based browser (Google Chrome, Google Chrome for Testing, or Chromium) plus the bundled unpacked extension and native messaging host. Setup steps live in [Operator flow](#operator-flow).
 
 ## Use
 
@@ -74,7 +74,7 @@ In-browser controls:
 | Toggle annotation UI | `⌘/Ctrl+Shift+P` |
 | Close | `ESC` |
 
-## Operator setup
+## Operator flow
 
 ### 1. Load browser extension
 

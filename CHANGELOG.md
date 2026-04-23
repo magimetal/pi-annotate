@@ -8,6 +8,12 @@ All notable changes to Pi Annotate.
 - Realigned package layout to sibling-style `extensions/` entrypoints while preserving `/annotate` command and `annotate` tool behavior.
 - Switched maintained repository metadata and install guidance to `magimetal/pi-annotate`, with public install docs preferring git and local checkout surfaces until npm ownership is confirmed.
 - Added shipped provenance via `NOTICE.md`, explicit original-developer credit for Nico Bailon, and release verification gates for tarball contents plus isolated `pi install -l` smoke testing.
+- Migrated extension schema imports and package dependencies from `@sinclair/typebox` to `typebox`, aligning package metadata with Pi 0.69.0 extension guidance.
+- Bumped local Pi dev dependency to `@mariozechner/pi-coding-agent` `0.69.0` and refreshed lockfile for current TypeBox-native validation path.
+
+### Fixed
+- Adapted schema-contract tests to TypeBox 1 typings so package verification stays green under Pi 0.69.0.
+- Restored popup setup-guide anchor by renaming README operator setup section to `Operator flow`.
 
 ## [0.4.3] - 2026-04-21
 

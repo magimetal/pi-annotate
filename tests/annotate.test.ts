@@ -66,18 +66,27 @@ describe("pi-annotate", () => {
 			"Use only when the user explicitly asks for visual annotation or UI pointing. Call with {url?} and return selected element annotations.",
 		);
 
-		const parameters = tool?.parameters;
+		const parameters = tool?.parameters as
+			| {
+					type?: string;
+					properties?: Record<
+						string,
+						{ type?: string; description?: string }
+					>;
+					required?: string[];
+			  }
+			| undefined;
 		expect(parameters?.type).toBe("object");
 		expect(Object.keys(parameters?.properties ?? {}).sort()).toEqual([
 			"timeout",
 			"url",
 		]);
-		expect(parameters?.properties.url.type).toBe("string");
-		expect(parameters?.properties.timeout.type).toBe("number");
-		expect(parameters?.properties.url.description).toContain(
+		expect(parameters?.properties?.url?.type).toBe("string");
+		expect(parameters?.properties?.timeout?.type).toBe("number");
+		expect(parameters?.properties?.url?.description).toContain(
 			"current browser tab",
 		);
-		expect(parameters?.properties.timeout.description).toContain(
+		expect(parameters?.properties?.timeout?.description).toContain(
 			"Default: 300",
 		);
 		expect(parameters?.required ?? []).toEqual([]);
