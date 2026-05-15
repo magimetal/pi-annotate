@@ -10,6 +10,7 @@ All notable changes to Pi Annotate.
 - Added shipped provenance via `NOTICE.md`, explicit original-developer credit for Nico Bailon, and release verification gates for tarball contents plus isolated `pi install -l` smoke testing.
 - Migrated extension schema imports and package dependencies from `@sinclair/typebox` to `typebox`, aligning package metadata with Pi 0.69.0 extension guidance.
 - Bumped local Pi dev dependency to `@mariozechner/pi-coding-agent` `0.69.0` and refreshed lockfile for current TypeBox-native validation path.
+- Moved Pi extension API imports and package dependency metadata to `@earendil-works/pi-coding-agent` `0.74.0`.
 
 ### Fixed
 - Adapted schema-contract tests to TypeBox 1 typings so package verification stays green under Pi 0.69.0.
